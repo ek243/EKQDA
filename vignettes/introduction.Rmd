@@ -1,0 +1,105 @@
+---
+title: "Getting started with EKQDA"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with EKQDA}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+EKQDA is a small toolkit for computer-assisted qualitative data analysis. A
+project lives in a single SQLite file that holds your documents, your codes,
+the segments of text you have coded, and your memos. You can work with a
+project from R code, through the interactive Shiny app, or both.
+
+```{r load}
+library(EKQDA)
+```
+
+## Create a project and import documents
+
+`qual_init()` creates a project database (or opens an existing one). The
+examples here use temporary files; in a real project, give `qual_init()` a path
+such as `"my_research.sqlite"`.
+
+```{r init}
+project <- qual_init(tempfile(fileext = ".sqlite"))
+
+interview1 <- tempfile(fileext = ".txt")
+interview2 <- tempfile(fileext = ".txt")
+writeLines("The justice system needs reform, and equality before the law matters.",
+           interview1)
+writeLines("People want justice, but they also want fairness in how it is applied.",
+           interview2)
+
+qual_import_text(project, interview1, name = "interview1")
+qual_import_text(project, interview2, name = "interview2")
+qual_get_documents(project)
+```
+
+## Create codes and code text
+
+```{r codes}
+qual_add_code(project, "justice", "Discussions of justice", "#FF3333")
+qual_add_code(project, "equality", "Mentions of equality", "#33FF33")
+qual_add_code(project, "fairness", "Mentions of fairness", "#3333FF")
+qual_get_codes(project)
+```
+
+`qual_apply_code()` records that a stretch of a document, given by its first
+and last character positions, belongs to a code. In the app you do the same
+thing by selecting text; from code you give the positions yourself.
+
+```{r apply}
+qual_apply_code(project, doc_id = 1, code_id = 1, start = 5, end = 18,
+                text = "justice system")
+qual_apply_code(project, doc_id = 1, code_id = 2, start = 42, end = 66,
+                text = "equality before the law")
+qual_apply_code(project, doc_id = 2, code_id = 1, start = 13, end = 19,
+                text = "justice")
+qual_apply_code(project, doc_id = 2, code_id = 3, start = 41, end = 48,
+                text = "fairness")
+```
+
+## Retrieve and count coded segments
+
+```{r retrieve}
+qual_get_codings(project, code_id = 1)
+qual_code_frequency(project)
+qual_project_summary(project)
+```
+
+## Code co-occurrence
+
+`qual_code_cooccurrence()` returns a matrix that shows which codes appear
+together. At the default document level, a cell counts the documents in which
+both codes were applied. At the segment level, it counts pairs of coded
+segments that overlap in the same document. The diagonal gives the number of
+documents (or segments) in which a code appears.
+
+```{r cooc}
+qual_code_cooccurrence(project)
+qual_code_cooccurrence(project, level = "segment")
+```
+
+Because the result is an ordinary matrix, it can go straight into other tools,
+for example as the adjacency matrix of a code network.
+
+## The Shiny app
+
+`qual_launch_app()` opens the graphical interface for a project. Documents can
+be added and read, codes created, text coded, memos written, and coded
+segments retrieved and exported to CSV, text or Word, with frequency and
+co-occurrence plots on the Visualizations tab.
+
+```{r app, eval = FALSE}
+qual_launch_app("my_research.sqlite")
+```
+
+```{r cleanup, include = FALSE}
+DBI::dbDisconnect(project$connection)
+```

@@ -1,0 +1,37 @@
+Package: EKQDA
+Title: Computer-Assisted Qualitative Data Analysis
+Version: 0.1.0
+Authors@R:
+    person("Eric", "Kasper", , "erick@humanity-consultancy.com", role = c("aut", "cre", "cph"))
+Description: Tools for computer-assisted qualitative data analysis in R. Text
+    documents, codes, coded segments and memos are stored in a single SQLite
+    database. Functions are provided to import documents, define and apply
+    codes, retrieve coded segments, and compute code frequencies and code
+    co-occurrence matrices. An interactive 'shiny' application offers a
+    graphical interface for coding, memo writing, retrieval and export.
+License: MIT + file LICENSE
+URL: https://github.com/ek243/EKQDA
+BugReports: https://github.com/ek243/EKQDA/issues
+Depends:
+    R (>= 4.0.0)
+Imports:
+    DBI,
+    dplyr,
+    DT,
+    ggplot2,
+    officer,
+    readr,
+    RSQLite,
+    shiny,
+    shinyjs,
+    shinythemes
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    withr
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1

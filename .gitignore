@@ -1,0 +1,21 @@
+# R and RStudio
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+.httr-oauth
+
+# macOS / Windows
+.DS_Store
+__MACOSX/
+Thumbs.db
+
+# Local project databases (may contain research data)
+*.sqlite
+*.sqlite3
+*.db
+
+# Build and check output
+*.Rcheck/
+EKQDA_*.tar.gz
+inst/doc/
